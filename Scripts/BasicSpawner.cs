@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Fusion;
+using Fusion.Addons.Physics;
 using Fusion.Sockets;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -38,9 +39,11 @@ public class BasicSpawner : MonoBehaviour, INetworkRunnerCallbacks
     }
 
     private bool _mouseButton0;
+    private bool _mouseButton1;
     private void Update()
     {
         _mouseButton0 = _mouseButton0 | Input.GetMouseButton(0);
+        _mouseButton1 = _mouseButton1 | Input.GetMouseButton(1);
     }
     /**
      * 收集使用者的输入
@@ -63,6 +66,9 @@ public class BasicSpawner : MonoBehaviour, INetworkRunnerCallbacks
 
         data.buttons.Set( NetworkInputData.MOUSEBUTTON0, _mouseButton0);
         _mouseButton0 = false;
+        
+        data.buttons.Set( NetworkInputData.MOUSEBUTTON1, _mouseButton1);
+        _mouseButton1 = false;
 
         input.Set(data);
     }
@@ -87,6 +93,9 @@ public class BasicSpawner : MonoBehaviour, INetworkRunnerCallbacks
 
     async void StartGame(GameMode mode)
     {
+        // 开启物理模拟预测
+        gameObject.AddComponent<RunnerSimulatePhysics3D>();
+        
         // create the Fusion runner and let it know that we will be providing user input
         _runner = gameObject.AddComponent<NetworkRunner>();
         _runner.ProvideInput = true;
